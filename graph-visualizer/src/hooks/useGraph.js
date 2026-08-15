@@ -1,5 +1,6 @@
 import { useState } from "react";
 import bfs from "../algorithms/bfs.js";
+import dfs from "../algorithms/dfs.js";
 
 export default function useGraph() {
   const [nodes, setNodes] = useState([
@@ -34,9 +35,11 @@ export default function useGraph() {
 
   const [directed, setDirected] = useState(true);
 
-  const [start,setStart]=useState("");
+  const [startBFS,setStartBFS]=useState("");
+  const [startDFS, setStartDFS]=useState("");
 
   const [BfsResult,setBfsResult]=useState(null);
+  const [DfsResult,setDfsResult]=useState(null);
 
   function addNode() {
     const newNode = {
@@ -129,11 +132,20 @@ export default function useGraph() {
   }
 
   function runBFS(){
-    const result = bfs(nodes, edges, start, directed);
+    const result = bfs(nodes, edges,startBFS, directed);
     console.log('BFS result (computed):', result);
     setBfsResult(result);
 
-    setStart("");
+    setStartBFS("");
+  }
+
+
+  function runDFS(){
+    const result=dfs(edges,nodes,startDFS,directed);
+    console.log('DFS result(computed', result);
+    setDfsResult(result);
+
+    setStartDFS("");
   }
 
   return {
@@ -173,9 +185,17 @@ export default function useGraph() {
     removeEdge,
     clearGraph,
 
-    start,
-    setStart,
+    startBFS,
+    setStartBFS,
     runBFS,
-    bfsResult: BfsResult
+    bfsResult: BfsResult,
+
+
+    startDFS,
+    setStartDFS,
+    runDFS,
+    dfsResult: DfsResult
+
+
   };
 }

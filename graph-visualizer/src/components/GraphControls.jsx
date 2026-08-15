@@ -35,6 +35,7 @@ export default function GraphControls({
   runBFS,
   start,
   setStart,
+  runDFS
 }) {
   return (
     <div className="graph-controls">
@@ -141,6 +142,20 @@ export default function GraphControls({
         />
 
         <button onClick={runBFS}>Run BFS</button>
+      </div>
+
+
+      <div className="graphcontrol">
+        <input
+          type="text"
+          value={start}
+          onChange={(e) => {
+            setStart(e.target.value);
+          }}
+          placeholder="Enter Start Vertex"
+        />
+
+        <button onClick={runDFS}>Run DFS</button>
       </div>
 
       <div className="graphcontrol">

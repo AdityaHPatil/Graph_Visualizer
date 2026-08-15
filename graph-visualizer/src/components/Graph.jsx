@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import cytoscape from "cytoscape";
 
-export default function Graph({ nodes, edges, directed, bfsResult }) {
+export default function Graph({
+  nodes,
+  edges,
+  directed,
+  bfsResult,
+  dfsResult,
+}) {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
   useEffect(() => {
@@ -85,16 +91,20 @@ export default function Graph({ nodes, edges, directed, bfsResult }) {
     cy.layout({ name: "grid" }).run();
 
     if (bfsResult) {
-    bfsResult.order.forEach((nodeId) => {
-        cy.getElementById(nodeId).style(
-            "background-color",
-            "green"
-        );
-    });
-}
+      bfsResult.order.forEach((nodeId) => {
+        cy.getElementById(nodeId).style("background-color", "green");
+      });
+    }
+
+    if (dfsResult) {
+      dfsResult.order.forEach((nodeId) => {
+        cy.getElementById(nodeId).style("background-color", "red");
+      });
+    }
+
     // const layout=cy.layout({name:"grid"});      //returns the layout
     // layout.run();       //exceuting that layout
-  }, [nodes, edges, directed, bfsResult]);
+  }, [nodes, edges, directed, bfsResult, dfsResult]);
 
   return <div ref={containerRef} className="graph" />;
 }
