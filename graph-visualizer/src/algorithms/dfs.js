@@ -24,7 +24,8 @@ export default function dfs(edges, nodes, start, directed) {
 
     const neighbors = adj.get(src) || [];
 
-    for (const v of neighbors) {
+    for (const item of neighbors) {
+      const v=typeof item==="string" ? item: item.node;
       if (!globalVisited.has(v)) {
         rec(v,currentDistance+1);
       }

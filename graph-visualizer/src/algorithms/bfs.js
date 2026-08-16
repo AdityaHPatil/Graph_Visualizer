@@ -43,7 +43,8 @@ export default function bfs(nodes, edges, start, directed) {
     order.push(u);
 
     const neighbors = adj.get(u) || [];
-    for (const v of neighbors) {
+    for (const item of neighbors) {
+      const v=typeof item==="string" ? item:item.node;
       if (distances[v] === -1) {
         distances[v] = distances[u] + 1;
         queue.push(v);

@@ -33,6 +33,7 @@ export default function App() {
         directed={graph.directed}
         bfsResult={graph.bfsResult}
         dfsResult={graph.dfsResult}
+        dijkstraResult={graph.dijkstraResult}
       />
     </div>
   );

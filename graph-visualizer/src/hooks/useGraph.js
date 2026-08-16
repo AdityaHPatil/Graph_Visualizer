@@ -1,6 +1,7 @@
 import { useState } from "react";
 import bfs from "../algorithms/bfs.js";
 import dfs from "../algorithms/dfs.js";
+import dijkstra from "../algorithms/dijkstra.js";
 
 export default function useGraph() {
   const [nodes, setNodes] = useState([
@@ -13,13 +14,13 @@ export default function useGraph() {
       id: "AB",
       source: "A",
       target: "B",
-      weight:5,
+      weight: 5,
     },
   ]);
 
   const [vertex, setVertex] = useState("");
 
-  const [weight,setWeight]=useState("");
+  const [weight, setWeight] = useState("");
 
   const [source, setSource] = useState("");
 
@@ -31,15 +32,18 @@ export default function useGraph() {
 
   const [deleteTarget, setDeleteTarget] = useState("");
 
-  const [deleteWeight,setDeleteWeight]=useState("");
+  const [deleteWeight, setDeleteWeight] = useState("");
 
   const [directed, setDirected] = useState(true);
 
-  const [startBFS,setStartBFS]=useState("");
-  const [startDFS, setStartDFS]=useState("");
+  const [startBFS, setStartBFS] = useState("");
+  const [startDFS, setStartDFS] = useState("");
 
-  const [BfsResult,setBfsResult]=useState(null);
-  const [DfsResult,setDfsResult]=useState(null);
+  const [BfsResult, setBfsResult] = useState(null);
+  const [DfsResult, setDfsResult] = useState(null);
+
+  const [startDijkstra, setStartDijkstra] = useState("");
+  const [DijkstraResult, setDijkstraResult] = useState("");
 
   function addNode() {
     const newNode = {
@@ -79,16 +83,12 @@ export default function useGraph() {
   }
 
   function removeNode() {
-    setNodes((prevNodes) =>
-      prevNodes.filter((node) => node.id !== deleteNode)
-    );
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== deleteNode));
 
     setEdges((prevEdges) =>
       prevEdges.filter(
-        (edge) =>
-          edge.source !== deleteNode &&
-          edge.target !== deleteNode
-      )
+        (edge) => edge.source !== deleteNode && edge.target !== deleteNode,
+      ),
     );
 
     setDeleteNode("");
@@ -114,11 +114,13 @@ export default function useGraph() {
 
         return !(
           (edge.source === deleteSource &&
-            edge.target === deleteTarget && edge.weight === parsedDeleteWeight) ||
+            edge.target === deleteTarget &&
+            edge.weight === parsedDeleteWeight) ||
           (edge.source === deleteTarget &&
-            edge.target === deleteSource && edge.weight === parsedDeleteWeight)
+            edge.target === deleteSource &&
+            edge.weight === parsedDeleteWeight)
         );
-      })
+      }),
     );
 
     setDeleteSource("");
@@ -129,10 +131,22 @@ export default function useGraph() {
   function clearGraph() {
     setNodes([]);
     setEdges([]);
+    setBfsResult(null);
+    setDfsResult(null);
+    setDijkstraResult(null);
   }
 
-  function runBFS(){
-    if (!startBFS) { alert("Please enter a start node for BFS"); return; }
+  function clearTraversal(){
+    setBfsResult(null);
+    setDfsResult(null);
+    setDijkstraResult(null);
+  }
+
+  function runBFS() {
+    if (!startBFS) {
+      alert("Please enter a start node for BFS");
+      return;
+    }
     const result = bfs(nodes, edges, startBFS, directed);
     console.log("BFS result (computed):", result);
     setBfsResult(result);
@@ -140,14 +154,29 @@ export default function useGraph() {
     setStartBFS("");
   }
 
-
-  function runDFS(){
-    if (!startDFS) { alert("Please enter a start node for DFS"); return; }
+  function runDFS() {
+    if (!startDFS) {
+      alert("Please enter a start node for DFS");
+      return;
+    }
     const result = dfs(edges, nodes, startDFS, directed);
     console.log("DFS result (computed):", result);
     setDfsResult(result);
 
     setStartDFS("");
+  }
+
+  function runDijkstra() {
+    if (!startDijkstra) {
+      alert("Please enter a start node for Dijkstra");
+      return;
+    }
+
+    const result=dijkstra(nodes,edges,startDijkstra,directed);
+    console.log('Dijkstra Result: ', result);
+    setDijkstraResult(result);
+
+    setStartDijkstra("");
   }
 
   return {
@@ -186,18 +215,21 @@ export default function useGraph() {
     removeNode,
     removeEdge,
     clearGraph,
+    clearTraversal,
 
     startBFS,
     setStartBFS,
     runBFS,
     bfsResult: BfsResult,
 
-
     startDFS,
     setStartDFS,
     runDFS,
-    dfsResult: DfsResult
+    dfsResult: DfsResult,
 
-
+    startDijkstra,
+    setStartDijkstra,
+    runDijkstra,
+    dijkstraResult: DijkstraResult,
   };
 }

@@ -9,9 +9,9 @@ export default function adjlistcreator(nodes, edges,directed){
     if (!adj.has(edge.source)) adj.set(edge.source, []);
     if (!adj.has(edge.target)) adj.set(edge.target, []);
 
-    adj.get(edge.source).push(edge.target);
+    adj.get(edge.source).push({node:edge.target,weight:edge.weight});
     if (!directed) {
-      adj.get(edge.target).push(edge.source);
+      adj.get(edge.target).push({node:edge.source,weight:edge.weight});
     }
   }
 

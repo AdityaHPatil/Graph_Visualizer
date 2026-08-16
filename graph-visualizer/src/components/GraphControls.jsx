@@ -31,6 +31,7 @@ export default function GraphControls({
   removeNode,
   removeEdge,
   clearGraph,
+  clearTraversal,
 
   runBFS,
   startBFS,
@@ -38,6 +39,9 @@ export default function GraphControls({
   runDFS,
   startDFS,
   setStartDFS,
+  runDijkstra,
+  startDijkstra,
+  setStartDijkstra
 }) {
   return (
     <div className="graph-controls">
@@ -160,8 +164,21 @@ export default function GraphControls({
         <button onClick={runDFS}>Run DFS</button>
       </div>
 
+
+      <div className="graphcontrol">
+        <input type="text" value={startDijkstra} onChange={(e)=>{
+          setStartDijkstra(e.target.value);
+        }} placeholder="Enter Start Vertex"/>
+
+        <button onClick={runDijkstra}>Run dijkstra</button>
+      </div>
+
       <div className="graphcontrol">
         <button onClick={clearGraph}>Clear Graph</button>
+      </div>
+
+      <div className="graphcontrol">
+        <button onClick={clearTraversal}>Clear Traversal</button>
       </div>
     </div>
   );

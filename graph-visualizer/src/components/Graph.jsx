@@ -7,6 +7,7 @@ export default function Graph({
   directed,
   bfsResult,
   dfsResult,
+  dijkstraResult
 }) {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
@@ -90,6 +91,9 @@ export default function Graph({
 
     cy.layout({ name: "grid" }).run();
 
+    cy.nodes().style("background-color", "#2563eb");
+
+
     if (bfsResult) {
       bfsResult.order.forEach((nodeId) => {
         cy.getElementById(nodeId).style("background-color", "green");
@@ -102,9 +106,15 @@ export default function Graph({
       });
     }
 
+    if (dijkstraResult) {
+      dijkstraResult.order.forEach((nodeId) => {
+        cy.getElementById(nodeId).style("background-color", "red");
+      });
+    }
+
     // const layout=cy.layout({name:"grid"});      //returns the layout
     // layout.run();       //exceuting that layout
-  }, [nodes, edges, directed, bfsResult, dfsResult]);
+  }, [nodes, edges, directed, bfsResult, dfsResult, dijkstraResult]);
 
   return <div ref={containerRef} className="graph" />;
 }
