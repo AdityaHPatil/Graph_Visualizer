@@ -3,6 +3,7 @@ import bfs from "../algorithms/bfs.js";
 import dfs from "../algorithms/dfs.js";
 import dijkstra from "../algorithms/dijkstra.js";
 import Kruskal from "../algorithms/kruskal.js";
+import tarjan from "../algorithms/tarjan.js";
 
 export default function useGraph() {
   const [nodes, setNodes] = useState([
@@ -47,6 +48,8 @@ export default function useGraph() {
   const [DijkstraResult, setDijkstraResult] = useState("");
 
   const [MSTResult, setMSTResult]=useState(null);
+
+  const [tarjanResult, setTarjanResult]=useState(null);
 
   function addNode() {
     const newNode = {
@@ -193,6 +196,17 @@ export default function useGraph() {
     
   }
 
+  function runTarjan() {
+    if (directed) {
+      alert("Tarjan works only for undirected graphs");
+      return;
+    }
+
+    const result = tarjan(nodes, edges, directed);
+    console.log(result);
+    setTarjanResult(result);
+  }
+
   return {
     nodes,
     edges,
@@ -249,5 +263,10 @@ export default function useGraph() {
     runKruskal,
     mstResult: MSTResult,
     setMSTResult,
+
+
+    runTarjan,
+    tarjanResult:tarjanResult,
+    setTarjanResult,
   };
 }

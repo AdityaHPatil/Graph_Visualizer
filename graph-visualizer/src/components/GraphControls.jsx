@@ -43,6 +43,7 @@ export default function GraphControls({
   startDijkstra,
   setStartDijkstra,
   runKruskal,
+  runTarjan
 
 }) {
   return (
@@ -186,6 +187,8 @@ export default function GraphControls({
       <div className="graphcontrol">
         <button onClick={runKruskal}>Find MST</button>
       </div>
+
+      <div className="graphcontrol"><button onClick={runTarjan}>Run Tarjan</button></div>
     </div>
   );
 }

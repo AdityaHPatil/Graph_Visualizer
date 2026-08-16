@@ -8,7 +8,8 @@ export default function Graph({
   bfsResult,
   dfsResult,
   dijkstraResult,
-  mstResult
+  mstResult,
+  tarjanResult,
 }) {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
@@ -36,7 +37,7 @@ export default function Graph({
             "target-arrow-color": "#64748b",
             "target-arrow-shape": "triangle",
             "curve-style": "bezier",
-            "label": "data(weight)",
+            label: "data(weight)",
             "font-size": 12,
             "text-background-color": "rgba(255,255,255,0.8)",
             "text-background-opacity": 1,
@@ -94,7 +95,6 @@ export default function Graph({
 
     cy.nodes().style("background-color", "#2563eb");
 
-
     if (bfsResult) {
       bfsResult.order.forEach((nodeId) => {
         cy.getElementById(nodeId).style("background-color", "green");
@@ -113,16 +113,36 @@ export default function Graph({
       });
     }
 
-    if (mstResult){
-          mstResult.edges.forEach((edge) => {
+    if (mstResult) {
+      mstResult.edges.forEach((edge) => {
         cy.getElementById(edge.id).style("line-color", "#22c55e");
         cy.getElementById(edge.id).style("width", 5);
       });
     }
 
+    if (tarjanResult) {
+      tarjanResult.articulationPoints.forEach((nodeId) => {
+        cy.getElementById(nodeId).style("background-color", "#f59e0b");
+      });
+
+      tarjanResult.bridges.forEach((edgeId) => {
+        cy.getElementById(edgeId).style("line-color", "#22c55e");
+        cy.getElementById(edgeId).style("width", 5);
+      });
+    }
+
     // const layout=cy.layout({name:"grid"});      //returns the layout
     // layout.run();       //exceuting that layout
-  }, [nodes, edges, directed, bfsResult, dfsResult, dijkstraResult,mstResult]);
+  }, [
+    nodes,
+    edges,
+    directed,
+    bfsResult,
+    dfsResult,
+    dijkstraResult,
+    mstResult,
+    tarjanResult,
+  ]);
 
   return <div ref={containerRef} className="graph" />;
 }
