@@ -18,7 +18,7 @@ export default function Graph({
           selector: "node",
           style: {
             label: "data(label)",
-            backgroundColor: "#2563eb",
+            "background-color": "#2563eb",
             color: "white",
             "text-valign": "center",
             "text-halign": "center",
@@ -34,7 +34,7 @@ export default function Graph({
             "target-arrow-color": "#64748b",
             "target-arrow-shape": "triangle",
             "curve-style": "bezier",
-            content: "data(weight)",
+            "label": "data(weight)",
             "font-size": 12,
             "text-background-color": "rgba(255,255,255,0.8)",
             "text-background-opacity": 1,

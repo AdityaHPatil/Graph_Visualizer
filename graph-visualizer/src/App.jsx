@@ -32,6 +32,7 @@ export default function App() {
         edges={edges}
         directed={graph.directed}
         bfsResult={graph.bfsResult}
+        dfsResult={graph.dfsResult}
       />
     </div>
   );

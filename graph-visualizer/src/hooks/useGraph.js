@@ -132,8 +132,9 @@ export default function useGraph() {
   }
 
   function runBFS(){
-    const result = bfs(nodes, edges,startBFS, directed);
-    console.log('BFS result (computed):', result);
+    if (!startBFS) { alert("Please enter a start node for BFS"); return; }
+    const result = bfs(nodes, edges, startBFS, directed);
+    console.log("BFS result (computed):", result);
     setBfsResult(result);
 
     setStartBFS("");
@@ -141,8 +142,9 @@ export default function useGraph() {
 
 
   function runDFS(){
-    const result=dfs(edges,nodes,startDFS,directed);
-    console.log('DFS result(computed', result);
+    if (!startDFS) { alert("Please enter a start node for DFS"); return; }
+    const result = dfs(edges, nodes, startDFS, directed);
+    console.log("DFS result (computed):", result);
     setDfsResult(result);
 
     setStartDFS("");

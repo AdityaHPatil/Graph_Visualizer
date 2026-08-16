@@ -33,9 +33,11 @@ export default function GraphControls({
   clearGraph,
 
   runBFS,
-  start,
-  setStart,
-  runDFS
+  startBFS,
+  setStartBFS,
+  runDFS,
+  startDFS,
+  setStartDFS,
 }) {
   return (
     <div className="graph-controls">
@@ -134,9 +136,9 @@ export default function GraphControls({
       <div className="graphcontrol">
         <input
           type="text"
-          value={start}
+          value={startBFS}
           onChange={(e) => {
-            setStart(e.target.value);
+            setStartBFS(e.target.value);
           }}
           placeholder="Enter Start Vertex"
         />
@@ -148,9 +150,9 @@ export default function GraphControls({
       <div className="graphcontrol">
         <input
           type="text"
-          value={start}
+          value={startDFS}
           onChange={(e) => {
-            setStart(e.target.value);
+            setStartDFS(e.target.value);
           }}
           placeholder="Enter Start Vertex"
         />
