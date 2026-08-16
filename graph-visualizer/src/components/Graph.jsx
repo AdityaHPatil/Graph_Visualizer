@@ -7,7 +7,8 @@ export default function Graph({
   directed,
   bfsResult,
   dfsResult,
-  dijkstraResult
+  dijkstraResult,
+  mstResult
 }) {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
@@ -112,9 +113,16 @@ export default function Graph({
       });
     }
 
+    if (mstResult){
+          mstResult.edges.forEach((edge) => {
+        cy.getElementById(edge.id).style("line-color", "#22c55e");
+        cy.getElementById(edge.id).style("width", 5);
+      });
+    }
+
     // const layout=cy.layout({name:"grid"});      //returns the layout
     // layout.run();       //exceuting that layout
-  }, [nodes, edges, directed, bfsResult, dfsResult, dijkstraResult]);
+  }, [nodes, edges, directed, bfsResult, dfsResult, dijkstraResult,mstResult]);
 
   return <div ref={containerRef} className="graph" />;
 }

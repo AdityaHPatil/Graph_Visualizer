@@ -2,6 +2,7 @@ import { useState } from "react";
 import bfs from "../algorithms/bfs.js";
 import dfs from "../algorithms/dfs.js";
 import dijkstra from "../algorithms/dijkstra.js";
+import Kruskal from "../algorithms/kruskal.js";
 
 export default function useGraph() {
   const [nodes, setNodes] = useState([
@@ -44,6 +45,8 @@ export default function useGraph() {
 
   const [startDijkstra, setStartDijkstra] = useState("");
   const [DijkstraResult, setDijkstraResult] = useState("");
+
+  const [MSTResult, setMSTResult]=useState(null);
 
   function addNode() {
     const newNode = {
@@ -179,6 +182,17 @@ export default function useGraph() {
     setStartDijkstra("");
   }
 
+  function runKruskal(){
+    if (directed){
+      alert("For MST we don't consider directed graphs");
+      return;
+    }
+    const result=Kruskal(nodes,edges,directed);
+    console.log(result);
+    setMSTResult(result);
+    
+  }
+
   return {
     nodes,
     edges,
@@ -231,5 +245,9 @@ export default function useGraph() {
     setStartDijkstra,
     runDijkstra,
     dijkstraResult: DijkstraResult,
+
+    runKruskal,
+    mstResult: MSTResult,
+    setMSTResult,
   };
 }

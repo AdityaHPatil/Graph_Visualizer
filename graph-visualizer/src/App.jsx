@@ -34,6 +34,7 @@ export default function App() {
         bfsResult={graph.bfsResult}
         dfsResult={graph.dfsResult}
         dijkstraResult={graph.dijkstraResult}
+        mstResult={graph.mstResult}
       />
     </div>
   );

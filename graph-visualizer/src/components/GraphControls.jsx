@@ -41,7 +41,9 @@ export default function GraphControls({
   setStartDFS,
   runDijkstra,
   startDijkstra,
-  setStartDijkstra
+  setStartDijkstra,
+  runKruskal,
+
 }) {
   return (
     <div className="graph-controls">
@@ -179,6 +181,10 @@ export default function GraphControls({
 
       <div className="graphcontrol">
         <button onClick={clearTraversal}>Clear Traversal</button>
+      </div>
+
+      <div className="graphcontrol">
+        <button onClick={runKruskal}>Find MST</button>
       </div>
     </div>
   );
