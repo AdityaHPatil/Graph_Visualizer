@@ -6,10 +6,29 @@ import jwt from "jsonwebtoken";
 
 export async function signup(req,res){
 try{
+        
+    
         const email=req.body.email;
         const password=req.body.password;
 
-        if (!email){
+        if (typeof email !=='string' || typeof password !== 'string'){
+            return res.status(400).json({error:"Email and password must be strings"})
+        }
+
+
+
+        const cleanedEmail=email.trim().toLowerCase();
+
+        const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(cleanedEmail)){
+            return res.status(400).json({
+                message:"Please provide a valid email ID"
+            });
+        }
+        
+
+        if (!cleanedEmail){
             return res.status(400).json({message:"email is mandatory"});
         }
 
@@ -23,11 +42,14 @@ try{
 
         const passwordHash=await bcrypt.hash(password,10);
 
-        const result=await pool.query(`INSERT INTO users (email,password_hash) VALUES ($1,$2) RETURNING id,email`,[email.toLowerCase(),passwordHash]);
+        const result=await pool.query(`INSERT INTO users (email,password_hash) VALUES ($1,$2) RETURNING id,email`,[cleanedEmail,passwordHash]);
 
         const user=result.rows[0];
-        const token=createToken(user);
+        if (!user){
+            return res.status(500).json({message:"User creation failed in database"})
+        }
 
+        const token=createToken(user);
         setAuthCookie(res,token);
 
         return res.status(201).json(user);
@@ -48,13 +70,27 @@ export async function login(req,res){
         const email=req.body.email;
         const password=req.body.password;
 
-        const result=await pool.query("SELECT * FROM users where email=$1",[email]);
+        if (typeof email !=='string' || typeof password !== 'string'){
+            return res.status(400).json({message:"Email and password must be strings"})
+        }
+
+        const cleanedEmail=email.trim().toLowerCase();
+
+        const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(cleanedEmail)){
+            return res.status(400).json({
+                message:"Please provide a valid email ID"
+            });
+        }
+
+        const result=await pool.query("SELECT * FROM users where email=$1",[cleanedEmail]);
 
         if (result.rows.length===0) {
             return res.status(401).json({message:"Invalid email"});
         }
 
-        const nextResult=await bcrypt.compare(password,res.rows[0].password_hash);
+        const nextResult=await bcrypt.compare(password,result.rows[0].password_hash);
 
         if (!nextResult){
             return res.status(401).json({message:"Invalid password"});
@@ -78,28 +114,34 @@ export async function login(req,res){
 }
 
 export async function me(req,res){
-    let token=null;
+    // let token=null;
 
-    if (req.headers.cookie){
-        const cookieArray=req.headers.cookie.split("; ");
+    // if (req.headers.cookie){
+    //     const cookieArray=req.headers.cookie.split("; ");
 
-        const tokenCookie=cookieArray.find((item) => {
-            return item.startsWith("token=") });
+    //     const tokenCookie=cookieArray.find((item) => {
+    //         return item.startsWith("token=") });
 
-        if (tokenCookie){
-            token=tokenCookie.split("=")[1];
-        }else{
-            console.log("Token cookie not found in the list");      
-        }
-    }else{
-        console.log("No cookies found in headers");
-    }
+    //     if (tokenCookie){
+    //         token=tokenCookie.split("=")[1];
+    //     }else{
+    //         console.log("Token cookie not found in the list");      
+    //     }
+    // }else{
+    //     console.log("No cookies found in headers");
+    // }
 
-    if (!token){
-        return res.status(401).json({message:"Not logged in"});
-    }
+    // if (!token){
+    //     return res.status(401).json({message:"Not logged in"});
+    // }
 
     try {
+        const token=req.cookies?.token;
+
+        if (!token){
+            return res.status(401).json({ message: "Not logged in" });
+        }
+
         const decoded=jwt.verify(token,import.meta.env.JWT_SECRET);
 
         const result=await pool.query("SELECT * from USERS WHERE id=$1",[decoded.id])

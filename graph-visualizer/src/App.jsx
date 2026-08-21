@@ -135,9 +135,10 @@ export default function App() {
     return (
       <form className="auth-form" onSubmit={isSignUp? handleSignUp:handleLogin}>
         <h1>Graph Visualizer</h1>
-        <h2>Log in</h2>
+        <h2>{isSignUp? "Create Account":"Log in"}</h2>
         <input
           type="email"
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
           placeholder="Email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -146,6 +147,7 @@ export default function App() {
 
         <input
           type="password"
+          minLength={6}
           placeholder="Password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
