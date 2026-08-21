@@ -15,34 +15,110 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [isSignUp,setIsSignUp]=useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/auth/me`, { credentials: "include" })
-      .then((response) => (response.ok ? response.json() : null))
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+
+      async function checkUserSession(){
+        try{
+          const res=await fetch(`${API_URL}/api/auth/me`,{credentials:"include"});    // Sends browser cookies to the server
+
+          if (res.ok===true){
+            const userData=await res.json();
+            setUser(userData);
+          }
+          //if the server says "no active session found"
+          else{
+            setUser(null);           //clear any user data
+          }
+        }
+        //if teh server is offline or the network drops completely
+        catch(error){
+          setUser(null);            // Clear data so they must log in again
+          console.error(error);
+        }
+        finally{
+          setLoading(false);          //stop showing the loading screen
+        }
+      }
+
+      checkUserSession();
   }, []);
+
+  async function handleSignUp(event){
+      event.preventDefault();
+      setAuthError("");
+
+      try{
+        const res=await fetch(`${API_URL}/api/auth/signup`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          credentials:"include",
+          body:JSON.stringify({email:email,password:password}),
+        });
+
+
+        const serverData=await res.json();
+
+        if (res.ok===false){
+          if (serverData.message){
+            setAuthError(serverData.message);
+          }else{
+            setAuthError("SignUp failed");
+          }
+          return;
+        }
+
+         setUser(serverData); // Log the user into the app
+        setPassword("");
+        setEmail("");
+      }
+      // if server is offline 
+      catch(error){
+        setAuthError("Could not connect to the server");
+        console.error(error);
+      }
+
+    }
 
   async function handleLogin(event) {
     event.preventDefault();
     setAuthError("");
 
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
+    try{
+      const res=await fetch(`${API_URL}/api/auth/login`,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        credentials:"include",
+        body:JSON.stringify({email:email,password:password}),
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
-      setAuthError(data.message || "Login failed");
-      return;
+      // translate json text to JS object
+      const serverData=await res.json();
+
+      if (res.ok===false){
+        if (serverData.message){
+          setAuthError(serverData.message);
+        }else{
+          setAuthError("Login failed");
+        }
+        return;
+      }
+
+      setUser(serverData); // Log the user into the app
+      setPassword("");  
+
+    }
+    //if the server is offline or the network drops completely
+    catch(error){
+       setAuthError("Could not connect to the server. Please try again.");
+       console.error(error);
     }
 
-    setUser(data);
-    setPassword("");
   }
 
   async function handleLogout() {
@@ -57,7 +133,7 @@ export default function App() {
 
   if (!user) {
     return (
-      <form className="auth-form" onSubmit={handleLogin}>
+      <form className="auth-form" onSubmit={isSignUp? handleSignUp:handleLogin}>
         <h1>Graph Visualizer</h1>
         <h2>Log in</h2>
         <input
@@ -67,6 +143,7 @@ export default function App() {
           onChange={(event) => setEmail(event.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -74,8 +151,18 @@ export default function App() {
           onChange={(event) => setPassword(event.target.value)}
           required
         />
+
         {authError && <p>{authError}</p>}
-        <button type="submit">Log in</button>
+
+        <button type="submit">{isSignUp ? "Sign up":"Log in"}</button>
+
+        <button type="button" onClick={() => {
+          setIsSignUp(!isSignUp);
+          setAuthError("");
+        }}>{isSignUp
+          ? "Already have an account? Log in"
+          : "Need an account? Sign up"}
+        </button>
       </form>
     );
   }
