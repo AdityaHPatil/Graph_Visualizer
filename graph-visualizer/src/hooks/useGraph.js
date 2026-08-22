@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import bfs from "../algorithms/bfs.js";
 import dfs from "../algorithms/dfs.js";
 import dijkstra from "../algorithms/dijkstra.js";
@@ -40,6 +40,9 @@ export default function useGraph() {
 
   const [startBFS, setStartBFS] = useState("");
   const [startDFS, setStartDFS] = useState("");
+
+  const [bfsStep,setBfsStep] = useState(-1);
+  const [isBfsPlaying,setIsBfsPlaying]=useState(false);
 
   const [BfsResult, setBfsResult] = useState(null);
   const [DfsResult, setDfsResult] = useState(null);
@@ -155,9 +158,49 @@ export default function useGraph() {
     }
     const result = bfs(nodes, edges, startBFS, directed);
     console.log("BFS result (computed):", result);
-    setBfsResult(result);
 
+    if (result.error){
+      alert(result.error);
+      return;
+    }
+
+    setBfsResult(result);
+    setBfsStep(-1);
+    setIsBfsPlaying(false);
     setStartBFS("");
+  }
+
+  function nextBfsStep(){
+    if (!BfsResult || bfsStep >= BfsResult.order.length-1){
+      setIsBfsPlaying(false);
+      return;
+    }
+    setBfsStep((step)=>step+1);
+
+  }
+
+
+  function playBfs(){
+    if (!BfsResult){
+      alert("Run BFS first");
+      return;
+    }
+
+    if (bfsStep>=BfsResult.order.length-1){
+        setBfsStep(-1);
+    }
+
+    setIsBfsPlaying(true);
+  }
+
+
+  function pauseBfs(){
+    setIsBfsPlaying(false);
+  }
+
+  function resetBfs(){
+    setIsBfsPlaying(false);
+    setBfsStep(-1);
   }
 
   function runDFS() {
@@ -206,6 +249,27 @@ export default function useGraph() {
     console.log(result);
     setTarjanResult(result);
   }
+
+  useEffect(()=>{
+    if (!isBfsPlaying){
+      return;
+    }
+
+    const timer=setInterval(() => { 
+      setBfsStep((step) => { 
+        if (!BfsResult || step>=BfsResult.order.length-1){
+          setIsBfsPlaying(false);
+          return step;
+        }
+
+        return step+1;
+       })
+     },800);
+    
+    
+     return ()=>clearInterval(timer);
+  },[isBfsPlaying,BfsResult])
+  
 
   return {
     nodes,
@@ -268,5 +332,12 @@ export default function useGraph() {
     runTarjan,
     tarjanResult:tarjanResult,
     setTarjanResult,
+
+    bfsStep,
+    isBfsPlaying,
+    nextBfsStep,
+    playBfs,
+    pauseBfs,
+    resetBfs
   };
 }

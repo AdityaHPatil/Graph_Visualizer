@@ -43,8 +43,14 @@ export default function GraphControls({
   startDijkstra,
   setStartDijkstra,
   runKruskal,
-  runTarjan
+  runTarjan,
 
+  bfsStep,
+  isBfsPlaying,
+  nextBfsStep,
+  playBfs,
+  pauseBfs,
+  resetBfs,
 }) {
   return (
     <div className="graph-controls">
@@ -153,7 +159,6 @@ export default function GraphControls({
         <button onClick={runBFS}>Run BFS</button>
       </div>
 
-
       <div className="graphcontrol">
         <input
           type="text"
@@ -167,11 +172,15 @@ export default function GraphControls({
         <button onClick={runDFS}>Run DFS</button>
       </div>
 
-
       <div className="graphcontrol">
-        <input type="text" value={startDijkstra} onChange={(e)=>{
-          setStartDijkstra(e.target.value);
-        }} placeholder="Enter Start Vertex"/>
+        <input
+          type="text"
+          value={startDijkstra}
+          onChange={(e) => {
+            setStartDijkstra(e.target.value);
+          }}
+          placeholder="Enter Start Vertex"
+        />
 
         <button onClick={runDijkstra}>Run dijkstra</button>
       </div>
@@ -188,7 +197,21 @@ export default function GraphControls({
         <button onClick={runKruskal}>Find MST</button>
       </div>
 
-      <div className="graphcontrol"><button onClick={runTarjan}>Run Tarjan</button></div>
+      <div className="graphcontrol">
+        <button onClick={runTarjan}>Run Tarjan</button>
+      </div>
+
+      <div className="graphcontrol">
+        <button onClick={playBfs} disabled={isBfsPlaying}>
+          Play BFS
+        </button>
+        <button onClick={pauseBfs} disabled={!isBfsPlaying}>
+          Pause
+        </button>
+        <button onClick={nextBfsStep}>Next Step</button>
+        <button onClick={resetBfs}>Reset BFS</button>
+        {bfsStep>=0 && <span>Step: {bfsStep+1}</span>}
+      </div>
     </div>
   );
 }

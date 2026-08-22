@@ -85,6 +85,17 @@ body:has(.app.dark) {
   margin-bottom: 15px;
 }
 
+.graphcontrol span {
+  font-weight: 600;
+  color: #475569;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .control-group {
   display: flex;
   align-items: center;

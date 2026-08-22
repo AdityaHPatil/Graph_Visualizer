@@ -6,6 +6,7 @@ export default function Graph({
   edges,
   directed,
   bfsResult,
+  bfsStep,
   dfsResult,
   dijkstraResult,
   mstResult,
@@ -95,9 +96,19 @@ export default function Graph({
 
     cy.nodes().style("background-color", "#2563eb");
 
-    if (bfsResult) {
-      bfsResult.order.forEach((nodeId) => {
-        cy.getElementById(nodeId).style("background-color", "green");
+    if (bfsResult && bfsStep >= 0) {
+      const visitedNodes = bfsResult.order.slice(0, bfsStep + 1);
+
+      visitedNodes.forEach((nodeId, index) => {
+        const node = cy.getElementById(nodeId);
+
+        if (index === visitedNodes.length - 1) {
+          node.style("background-color", "#f59e0b");
+          node.style("border-width", 5);
+          node.style("border-color", "#fbbf24");
+        } else {
+          node.style("background-color", "#22c55e");
+        }
       });
     }
 
@@ -138,6 +149,7 @@ export default function Graph({
     edges,
     directed,
     bfsResult,
+    bfsStep,
     dfsResult,
     dijkstraResult,
     mstResult,
