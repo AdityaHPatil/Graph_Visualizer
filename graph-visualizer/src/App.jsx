@@ -29,9 +29,9 @@ export default function App() {
         setDarkMode={setDarkMode}
       />
 
-      <GraphControls 
-        {...controls} 
-        bfsStep={graph.bfsStep} 
+      <GraphControls
+        {...controls}
+        bfsStep={graph.bfsStep}
         isBfsPlaying={graph.isBfsPlaying}
         nextBfsStep={graph.nextBfsStep}
         playBfs={graph.playBfs}
@@ -49,16 +49,29 @@ export default function App() {
         playDijkstra={graph.playDijkstra}
         pauseDijkstra={graph.pauseDijkstra}
         resetDijkstra={graph.resetDijkstra}
-
       />
 
       <div className="graph-status">
-      <h2>Graph Status</h2>
-      <span>
-        Nodes: {nodes.length} | Edges: {edges.length} |{" "}
-        {graph.directed ? "Directed" : "Undirected"}
-      </span>
+        <h2>Graph Status</h2>
+        <span>
+          Nodes: {nodes.length} | Edges: {edges.length} |{" "}
+          {graph.directed ? "Directed" : "Undirected"}
+        </span>
       </div>
+
+      {graph.mstResult && (
+        <div className="algorithm-result">
+          <h2>Minimum Spanning Tree</h2>
+
+          <p>Total weight: {graph.mstResult.totalWeight}</p>
+
+          <p>Edges selected: {graph.mstResult.edges.length}</p>
+
+          {graph.mstResult.edges.length < nodes.length - 1 && (
+            <p>Graph is disconnected. A complete MST could not be created.</p>
+          )}
+        </div>
+      )}
 
       <Graph
         nodes={nodes}
