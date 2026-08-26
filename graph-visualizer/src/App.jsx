@@ -52,6 +52,14 @@ export default function App() {
 
       />
 
+      <div className="graph-status">
+      <h2>Graph Status</h2>
+      <span>
+        Nodes: {nodes.length} | Edges: {edges.length} |{" "}
+        {graph.directed ? "Directed" : "Undirected"}
+      </span>
+      </div>
+
       <Graph
         nodes={nodes}
         edges={edges}

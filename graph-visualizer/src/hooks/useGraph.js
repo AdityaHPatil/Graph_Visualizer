@@ -78,7 +78,28 @@ export default function useGraph() {
     setIsDijkstraPlaying(false);
   }
 
+  function changeDirectedMode(value){
+    if (value===directed){
+      return;
+    }
+    resetAlgorithmState();
+    setDirected(value);
+  }
+
+  function ensureGraphHasNodes(algo){
+    if (nodes.length===0){
+      alert(`Add nodes before running ${algo}`);
+      return false;
+    }
+    return true;
+  }
+
   function addNode() {
+    if (!vertex.trim()){
+      alert("Enter a vertex name");
+      return;
+    }
+
     const newNode = {
       id: vertex,
       label: vertex,
@@ -176,6 +197,8 @@ export default function useGraph() {
   }
 
   function clearGraph() {
+
+    if (!window.confirm("Clear the entire graph")) return;
     setNodes([]);
     setEdges([]);
     resetAlgorithmState();
@@ -185,9 +208,16 @@ export default function useGraph() {
     resetAlgorithmState();
   }
 
+
+
+
   //bfs
 
   function runBFS() {
+    if (!ensureGraphHasNodes){
+      return;
+    }
+
     if (!startBFS) {
       alert("Please enter a start node for BFS");
       return;
@@ -249,6 +279,8 @@ export default function useGraph() {
   //dfs 
 
   function runDFS() {
+    if (!ensureGraphHasNodes()) return;
+
     if (!startDFS) {
       alert("Please enter a start node for DFS");
       return;
@@ -310,9 +342,13 @@ export default function useGraph() {
   }
 
 
+
   //dijkstra  
 
   function runDijkstra() {
+
+    if (!ensureGraphHasNodes()) return;
+
     if (!startDijkstra) {
       alert("Please enter a start node for Dijkstra");
       return;
@@ -338,9 +374,9 @@ export default function useGraph() {
 
     setStartDijkstra("");
 
-//     Store the new complete Dijkstra result, reset the animation position, and make sure playback starts fresh.
+    // Store the new complete Dijkstra result, reset the animation position, and make sure playback starts fresh.
 
-// Without resetting the step, running Dijkstra again could begin halfway through the previous animation or immediately appear finished.
+    // Without resetting the step, running Dijkstra again could begin halfway through the previous animation or immediately appear finished.
   }
 
   function nextDijkstraStep(){
@@ -371,6 +407,9 @@ export default function useGraph() {
     setIsDijkstraPlaying(false);
     setDijkstraStep(-1);
   }
+
+
+
 
   function runKruskal(){
     if (directed){
@@ -501,7 +540,7 @@ export default function useGraph() {
     setDeleteWeight,
 
     directed,
-    setDirected,
+    setDirected:changeDirectedMode,
 
     addNode,
     addEdge,
