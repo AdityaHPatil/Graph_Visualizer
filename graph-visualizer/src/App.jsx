@@ -1,5 +1,5 @@
 import "./App.css";
-import GraphControls from "/components/GraphControls";
+import GraphControls from "./components/GraphControls";
 import useGraph from "./hooks/useGraph";
 import useAuth from "./hooks/useAuth"; // Importing our custom hook
 import Header from "./components/Header";
@@ -35,8 +35,20 @@ export default function App() {
         isBfsPlaying={graph.isBfsPlaying}
         nextBfsStep={graph.nextBfsStep}
         playBfs={graph.playBfs}
-        pauseBFS={graph.pauseBfs}
+        pauseBfs={graph.pauseBfs}
         resetBfs={graph.resetBfs}
+        dfsStep={graph.dfsStep}
+        isDfsPlaying={graph.isDfsPlaying}
+        nextDfsStep={graph.nextDfsStep}
+        playDfs={graph.playDfs}
+        pauseDfs={graph.pauseDfs}
+        resetDfs={graph.resetDfs}
+        dijkstraStep={graph.dijkstraStep}
+        isDijkstraPlaying={graph.isDijkstraPlaying}
+        nextDijkstraStep={graph.nextDijkstraStep}
+        playDijkstra={graph.playDijkstra}
+        pauseDijkstra={graph.pauseDijkstra}
+        resetDijkstra={graph.resetDijkstra}
 
       />
 
@@ -47,9 +59,11 @@ export default function App() {
         bfsResult={graph.bfsResult}
         bfsStep={graph.bfsStep}
         dfsResult={graph.dfsResult}
+        dfsStep={graph.dfsStep}
         dijkstraResult={graph.dijkstraResult}
         mstResult={graph.mstResult}
         tarjanResult={graph.tarjanResult}
+        dijkstraStep={graph.dijkstraStep}
       />
     </div>
   );

@@ -51,6 +51,20 @@ export default function GraphControls({
   playBfs,
   pauseBfs,
   resetBfs,
+
+  dfsStep,
+  isDfsPlaying,
+  nextDfsStep,
+  playDfs,
+  pauseDfs,
+  resetDfs,
+
+  dijkstraStep,
+  isDijkstraPlaying,
+  nextDijkstraStep,
+  playDijkstra,
+  pauseDijkstra,
+  resetDijkstra,
 }) {
   return (
     <div className="graph-controls">
@@ -210,8 +224,38 @@ export default function GraphControls({
         </button>
         <button onClick={nextBfsStep}>Next Step</button>
         <button onClick={resetBfs}>Reset BFS</button>
-        {bfsStep>=0 && <span>Step: {bfsStep+1}</span>}
+        {bfsStep >= 0 && <span>Step: {bfsStep + 1}</span>}
       </div>
+
+      <div className="graphcontrol">
+        <button onClick={playDfs} disabled={isDfsPlaying}>
+          Play DFS
+        </button>
+        <button onClick={pauseDfs} disabled={!isDfsPlaying}>
+          Pause
+        </button>
+        <button onClick={nextDfsStep}>Next Step</button>
+        <button onClick={resetDfs}>Reset DFS</button>
+        {dfsStep >= 0 && <span>Step: {dfsStep + 1}</span>}
+      </div>
+
+      <div className="graphcontrol">
+        <button onClick={playDijkstra} disabled={isDijkstraPlaying}>
+          Play Dijkstra
+        </button>
+
+        <button onClick={pauseDijkstra} disabled={!isDijkstraPlaying}>
+          Pause
+        </button>
+
+        <button onClick={nextDijkstraStep}>Next Step</button>
+
+        <button onClick={resetDijkstra}>Reset Dijkstra</button>
+
+        {dijkstraStep >= 0 && <span>Step: {dijkstraStep + 1}</span>}
+      </div>
+
+      
     </div>
   );
 }

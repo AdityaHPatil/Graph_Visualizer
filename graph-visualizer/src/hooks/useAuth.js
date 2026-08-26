@@ -10,53 +10,61 @@ export default function useAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
-    async function checkUserSession(){
-      try{
-        const res=await fetch(`${API_URL}/api/auth/me`,{credentials:"include"});    // Sends browser cookies to the server
+    async function checkUserSession() {
+      try {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+          credentials: "include",
+        }); // Sends browser cookies to the server
 
-        if (res.ok===true){
-          const userData=await res.json();
+        if (res.ok === true) {
+          const userData = await res.json();
           setUser(userData);
         }
         //if the server says "no active session found"
-        else{
-          setUser(null);           //clear any user data
+        else {
+          setUser(null); //clear any user data
         }
-      }
-      //if teh server is offline or the network drops completely
-      catch(error){
-        setUser(null);            // Clear data so they must log in again
+      } catch (error) {
+        //if teh server is offline or the network drops completely
+        setUser(null); // Clear data so they must log in again
         console.error(error);
-      }
-      finally{
-        setLoading(false);          //stop showing the loading screen
+      } finally {
+        setLoading(false); //stop showing the loading screen
       }
     }
 
     checkUserSession();
   }, []);
 
-  async function handleSignUp(event){
+  async function handleSignUp(event) {
     event.preventDefault();
     setAuthError("");
 
-    try{
-      const res=await fetch(`${API_URL}/api/auth/signup`,{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
+    try {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        credentials:"include",
-        body:JSON.stringify({email:email,password:password}),
+        credentials: "include",
+        body: JSON.stringify({ email: email, password: password }),
       });
 
-      const serverData=await res.json();
+      let serverData = null;
+      const contentType = res.headers.get("content-type");
 
-      if (res.ok===false){
-        if (serverData.message){
+      if (contentType && contentType.includes("application/json")) {
+        serverData = await res.json();
+      }
+
+      if (!res.ok) {
+        // Check if serverData exists and has a message that isn't empty
+        if (serverData?.message && serverData.message.trim() !== "") {
           setAuthError(serverData.message);
-        }else{
-          setAuthError("SignUp failed");
+        } else {
+          // Fallback for 500 errors or empty server responses
+          console.log("Server failed with status:", res.status);
+          setAuthError("Server error. Please try again later.");
         }
         return;
       }
@@ -64,9 +72,8 @@ export default function useAuth() {
       setUser(serverData); // Log the user into the app
       setPassword("");
       setEmail("");
-    }
-    // if server is offline 
-    catch(error){
+    } catch (error) {
+      // if server is offline
       setAuthError("Could not connect to the server");
       console.error(error);
     }
@@ -76,36 +83,34 @@ export default function useAuth() {
     event.preventDefault();
     setAuthError("");
 
-    try{
-      const res=await fetch(`${API_URL}/api/auth/login`,{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        credentials:"include",
-        body:JSON.stringify({email:email,password:password}),
+        credentials: "include",
+        body: JSON.stringify({ email: email, password: password }),
       });
 
       // translate json text to JS object
-      const serverData=await res.json();
+      const serverData = await res.json();
 
-      if (res.ok===false){
-        if (serverData.message){
+      if (res.ok === false) {
+        if (serverData.message) {
           setAuthError(serverData.message);
-        }else{
+        } else {
           setAuthError("Login failed");
         }
         return;
       }
 
       setUser(serverData); // Log the user into the app
-      setPassword("");  
-
-    }
-    //if the server is offline or the network drops completely
-    catch(error){
-       setAuthError("Could not connect to the server. Please try again.");
-       console.error(error);
+      setPassword("");
+    } catch (error) {
+      //if the server is offline or the network drops completely
+      setAuthError("Could not connect to the server. Please try again.");
+      console.error(error);
     }
   }
 
@@ -130,6 +135,6 @@ export default function useAuth() {
     setIsSignUp,
     handleSignUp,
     handleLogin,
-    handleLogout
+    handleLogout,
   };
 }

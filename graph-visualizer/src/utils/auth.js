@@ -1,19 +1,21 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export function createToken(user) {
   return jwt.sign(
-    { id: user.id, 
-      email: user.email }, 
-    import.meta.env.JWT_SECRET, 
-    { expiresIn: "7d"},
+    { id: user.id, email: user.email },
+    import.meta.env.JWT_SECRET,
+    { expiresIn: "7d" }
   );
 }
 
-export function setAuthCookie(res,token){
-    res.cookie("token",token,{
-        httpOnly:true,
-        sameSite:"lax",
-        secure:false,
-        maxAge:7*24*60*60*1000,
-    });
+export function setAuthCookie(res, token) {
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 }

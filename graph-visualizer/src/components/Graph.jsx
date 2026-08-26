@@ -8,7 +8,9 @@ export default function Graph({
   bfsResult,
   bfsStep,
   dfsResult,
+  dfsStep,
   dijkstraResult,
+  dijkstraStep,
   mstResult,
   tarjanResult,
 }) {
@@ -112,15 +114,38 @@ export default function Graph({
       });
     }
 
-    if (dfsResult) {
-      dfsResult.order.forEach((nodeId) => {
-        cy.getElementById(nodeId).style("background-color", "red");
+    if (dfsResult && dfsStep >= 0) {
+      const visitedNodes = dfsResult.order.slice(0, dfsStep + 1);
+
+      visitedNodes.forEach((nodeId, index) => {
+        const node = cy.getElementById(nodeId);
+
+        if (index === visitedNodes.length - 1) {
+          node.style("background-color", "#f59e0b");
+          node.style("border-width", 5);
+          node.style("border-color", "#fbbf24");
+        } else {
+          node.style("background-color", "#22c55e");
+        }
       });
     }
 
-    if (dijkstraResult) {
-      dijkstraResult.order.forEach((nodeId) => {
-        cy.getElementById(nodeId).style("background-color", "red");
+    if (dijkstraResult && dijkstraStep >= 0) {
+      const visitedNodes = dijkstraResult.order.slice(
+        0,
+        dijkstraStep + 1,
+      );
+
+      visitedNodes.forEach((nodeId, index) => {
+        const node = cy.getElementById(nodeId);
+
+        if (index === visitedNodes.length - 1) {
+          node.style("background-color", "#f59e0b");
+          node.style("border-width", 5);
+          node.style("border-color", "#fbbf24");
+        } else {
+          node.style("background-color", "#22c55e");
+        }
       });
     }
 
@@ -151,7 +176,9 @@ export default function Graph({
     bfsResult,
     bfsStep,
     dfsResult,
+    dfsStep,
     dijkstraResult,
+    dijkstraStep,
     mstResult,
     tarjanResult,
   ]);

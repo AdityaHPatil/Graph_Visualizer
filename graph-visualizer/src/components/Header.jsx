@@ -5,9 +5,7 @@ export default function Header({ user, handleLogout, darkMode, setDarkMode }) {
       <span>Signed in as {user.email}</span>
 
       <button
-        onClick={() => {
-          handleLogout;
-        }}
+        onClick={handleLogout}
       >
         Log out
       </button>
