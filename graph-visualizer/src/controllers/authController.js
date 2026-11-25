@@ -145,7 +145,7 @@ export async function me(req,res){
             return res.status(401).json({ message: "Not logged in" });
         }
 
-        const decoded=jwt.verify(token, import.meta.env.JWT_SECRET);
+        const decoded=jwt.verify(token, process.env.JWT_SECRET);
 
         const result=await pool.query("SELECT * from USERS WHERE id=$1",[decoded.id])
 

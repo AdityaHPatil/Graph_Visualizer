@@ -6,7 +6,7 @@ dotenv.config();
 export function createToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email },
-    import.meta.env.JWT_SECRET,
+    process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 }

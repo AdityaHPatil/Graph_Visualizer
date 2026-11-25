@@ -1,22 +1,32 @@
 export default function Header({ user, handleLogout, darkMode, setDarkMode }) {
   return (
     <div className="header">
-      <h1>Graph Visualizer</h1>
-      <span>Signed in as {user.email}</span>
+      <a className="brand-lockup" href="/" aria-label="Graph Visualizer home">
+        <span className="brand-mark">G</span>
+        <span>
+          <strong>Graph Studio</strong>
+          <small>Visualize. Explore. Understand.</small>
+        </span>
+      </a>
 
-      <button
-        onClick={handleLogout}
-      >
-        Log out
-      </button>
+      <div className="header-actions">
+        <div className="account-chip">
+          <span className="account-avatar">{user.email.charAt(0).toUpperCase()}</span>
+          <span className="account-email">{user.email}</span>
+        </div>
 
-      <button
-        onClick={() => {
-          setDarkMode(!darkMode);
-        }}
-      >
-        {darkMode ? "☀️ Light Mode":"🌙 Dark Mode"}
-      </button>
+        <button
+          type="button"
+          className="button-secondary theme-toggle"
+          onClick={() => setDarkMode(!darkMode)}
+        >
+          {darkMode ? "Light mode" : "Dark mode"}
+        </button>
+
+        <button type="button" className="button-quiet" onClick={handleLogout}>
+          Log out
+        </button>
+      </div>
     </div>
   );
 }

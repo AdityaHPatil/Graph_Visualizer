@@ -1,5 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import cytoscape from "cytoscape";
+
+
+//Ray-casting algorithm to check if a point is inside a polygon
+function pointInPolygon(point, polygon) {
+  let inside=false;
+
+  for (let i=0,j=polygon.length-1;i<polygon.length;j=i++){
+    const current=polygon[i];
+    const previous=polygon[j];
+
+    const verticalCheck= (current.y > point.y) !== (previous.y > point.y);
+
+    const ratio= (point.y - current.y) / (previous.y - current.y);
+    const intersectX= ratio * (previous.x - current.x) + current.x;
+    const horizontalCheck= point.x < intersectX;
+
+    const crosses= verticalCheck && horizontalCheck;
+
+    if (crosses) {
+      inside=!inside;
+    }
+
+  }
+
+  return inside;
+}
 
 export default function Graph({
   nodes,
@@ -13,11 +39,137 @@ export default function Graph({
   dijkstraStep,
   mstResult,
   tarjanResult,
+  onSelectionChange,
 }) {
+  // Ref to hold the container div for Cytoscape
   const containerRef = useRef(null);
+
+  // Ref to hold the Cytoscape instance
   const cyRef = useRef(null);
+
+  // State to track whether the lasso selection tool is enabled
+  const [lassoEnabled, setLassoEnabled] = useState(false);
+
+  // State to hold the lasso path as an SVG path string
+  const [lassoPath, setLassoPath] = useState("");
+
+  //an array of points that represent the lasso path. Each point is an object with x and y properties.
+  const lassoPointsRef = useRef([]);
+
+  // Ref to track whether the lasso is currently being drawn
+  const isLassoDrawingRef = useRef(false);
+
+  function getLassoPoint(event) {
+    const overlayRect = event.currentTarget.getBoundingClientRect();
+    const graph = containerRef.current;
+
+    return {
+      x: ((event.clientX - overlayRect.left) * graph.clientWidth) / overlayRect.width,
+      y: ((event.clientY - overlayRect.top) * graph.clientHeight) / overlayRect.height,
+    };
+  }
+
+  function startLasso(event){
+    //basically if the lasso is not enabled or the mouse button is not the left button, we return and do nothing
+    if (!lassoEnabled || event.button!==0) return;
+
+    event.preventDefault();
+      // Why event.pointerId Matters
+    // Unlike older mouse events (where there is only one mouse cursor), Pointer Events support multi-touch and styluses. Every finger touching the screen or pen hovering over it gets a unique pointerId number. Passing event.pointerId tells the browser which specific finger or mouse click to lock onto.
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    const point = getLassoPoint(event);
+
+    isLassoDrawingRef.current=true;
+    lassoPointsRef.current=[point];
+
+    // This is the starting point of the lasso path, and we set it in the state so that the lasso can be drawn on the screen. The "M" command in SVG path data means "move to", which sets the starting point of the path without drawing a line.
+    setLassoPath(`M ${point.x} ${point.y}`);
+  }
+
+  function moveLasso(event){
+    if (!isLassoDrawingRef.current) return;
+
+    lassoPointsRef.current.push(getLassoPoint(event));
+
+    const pathData=lassoPointsRef.current.map((point,index)=>{
+      //for the first point, we use "M" to move to that point without drawing a line. For subsequent points, we use "L" to draw a line to that point.
+      const command=index===0 ? "M" : "L";
+
+      return `${command} ${point.x} ${point.y}`;
+    }).join(" ");
+
+
+    setLassoPath(pathData);
+  }
+
+
+
+  function finishLasso(){
+    if (!isLassoDrawingRef.current) return;
+
+    isLassoDrawingRef.current=false;
+    setLassoPath("");
+
+
+    const points = lassoPointsRef.current;
+    lassoPointsRef.current = [];
+
+    // If the lasso path has fewer than 3 points, it cannot form a closed shape, so we return early without selecting any nodes.
+    if (points.length<3) return;
+
+    const cy=cyRef.current;
+    if (!cy) return;
+
+    // Filter nodes that are inside the lasso polygon
+    const selectedNodes=cy.nodes().filter((node)=>{
+      const position=node.renderedPosition();
+      return pointInPolygon(position, points);
+    });
+
+
+    // Select the nodes that are inside the lasso polygon
+    cy.nodes().unselect();
+    selectedNodes.select();
+
+    const selectedIds = new Set(selectedNodes.map((node) => node.id()));
+
+    onSelectionChange?.({
+    nodes: selectedNodes.map((node) => ({
+      id: node.id(),
+      label: node.data("label"),
+    })),
+    edges: cy.edges()
+      .filter(
+        (edge) =>
+          selectedIds.has(edge.source().id()) &&
+          selectedIds.has(edge.target().id()),
+      )
+      .map((edge) => ({
+        id: edge.id(),
+        source: edge.source().id(),
+        target: edge.target().id(),
+        weight: edge.data("weight"),
+      })),
+    });
+
+
+  }
+
+  function cancelLasso(){
+    isLassoDrawingRef.current=false;
+    lassoPointsRef.current=[];
+    setLassoPath("");
+  }
+
+
+  function recenterGraph() {
+    cyRef.current?.fit(undefined, 32);
+  }
+
   useEffect(() => {
     const cy = cytoscape({
+      boxSelectionEnabled: false,
       container: containerRef.current,
       style: [
         {
@@ -49,6 +201,13 @@ export default function Graph({
             color: "#0f172a",
           },
         },
+        {
+          selector:"node:selected",
+          style:{
+            "border-width":4,
+            "border-color": "#f59e0b",
+          },
+        }
       ],
       layout: {
         name: "grid",
@@ -181,7 +340,42 @@ export default function Graph({
     dijkstraStep,
     mstResult,
     tarjanResult,
+
   ]);
 
-  return <div ref={containerRef} className="graph" />;
+  return (
+    <div className="graph-viewport">
+      <div ref={containerRef} className="graph" />
+
+      <div className="graph-toolbar">
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={recenterGraph}
+        >
+          Recenter graph
+        </button>
+
+        <button
+          type="button"
+          className={lassoEnabled ? "button-secondary lasso-active" : "button-secondary"}
+          aria-pressed={lassoEnabled}
+          onClick={() => setLassoEnabled((prev) => !prev)}
+        >
+          {lassoEnabled ? "Disable Lasso" : "Enable Lasso"}
+        </button>
+      </div>
+
+      <svg
+        className={lassoEnabled ? "graph-lasso-overlay active" : "graph-lasso-overlay"}
+        onPointerDown={startLasso}
+        onPointerMove={moveLasso}
+        onPointerUp={finishLasso}
+        onPointerCancel={cancelLasso}
+        aria-hidden="true"
+      >
+        <path className="lasso-path" d={lassoPath} />
+      </svg>
+    </div>
+  );
 }

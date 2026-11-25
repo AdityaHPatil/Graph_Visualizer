@@ -115,6 +115,13 @@ export default function useGraph() {
     setVertex("");
   }
 
+  function replaceGraph(graphData){
+    setNodes(graphData.nodes);
+    setEdges(graphData.edges);
+    setDirected(graphData.directed);
+    resetAlgorithmState();
+  }
+
   function addEdge() {
     const parsedWeight = Number(weight);
     if (Number.isNaN(parsedWeight)) {
@@ -124,11 +131,13 @@ export default function useGraph() {
 
     if (!nodes.some((node)=>{return node.id===source})){
         alert("Source node does not exist");
+        setSource("");
         return;
     }
 
     if (!nodes.some((node) => node.id === target)) {
         alert("Target node does not exist");
+        setTarget("");
         return;
     }
 
@@ -165,6 +174,18 @@ export default function useGraph() {
 
     if (deleteWeight === "" || Number.isNaN(parsedDeleteWeight)) {
       alert("Enter a valid weight to remove");
+      return;
+    }
+
+    if (!nodes.some((node) => node.id === deleteSource)) {
+      alert("Source node does not exist");
+      setDeleteSource("");
+      return;
+    }
+
+    if (!nodes.some((node) => node.id === deleteTarget)) {
+      alert("Target node does not exist");
+      setDeleteTarget("");
       return;
     }
 
@@ -592,6 +613,7 @@ export default function useGraph() {
     nextDijkstraStep,
     playDijkstra,
     pauseDijkstra,
-    resetDijkstra
+    resetDijkstra,
+    replaceGraph,
   };
 }
